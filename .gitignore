@@ -4,4 +4,4 @@ dist
 
 .next
 
-**/.env
+.env

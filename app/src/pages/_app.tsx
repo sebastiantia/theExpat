@@ -1,8 +1,10 @@
 import Map, { Marker, Popup } from "react-map-gl";
-import React, { useState, useEffect } from "react";
-import { listPosts } from "../listPosts";
+import React, { useState, useEffect, useRef, Fragment } from "react";
+import { listPosts } from "../api";
 import { ConvertBack } from "../convert";
-
+import { Dialog, Transition } from "@headlessui/react";
+import "../styles/index.css";
+import PostEntry from "../components/PostEntry";
 
 const App = (Component, pageProps) => {
   const [posts, setPosts] = useState([]);
@@ -15,6 +17,9 @@ const App = (Component, pageProps) => {
     longitude: -95.665,
     zoom: 3,
   });
+  const [open, setOpen] = useState(false);
+
+  const cancelButtonRef = useRef(null);
 
   useEffect(() => {
     (async () => {
@@ -24,12 +29,11 @@ const App = (Component, pageProps) => {
   }, []);
 
   // console.log(showPopup);
-  const showAddMarkerPopup= (event) => {
+  const showAddMarkerPopup = (event) => {
     const info = event.lngLat;
     setPostLocation(info);
-    console.log(postLocation)
-  }
-
+    console.log(postLocation);
+  };
 
   return (
     <>
@@ -109,10 +113,29 @@ const App = (Component, pageProps) => {
                         setShowPopup({});
                         console.log(showPopup);
                       }}
+                      style={{
+                        maxWidth: "400px",
+                      }}
                     >
-                      <div>
-                        <h3>{post.title}</h3>
-                        <p>{post.description}</p>
+                      <div className="max-w-sm rounded overflow-hidden shadow-lg">
+                        <div className="px-2 py-2">
+                          <img className="rounded-t-lg" src="" alt="" />
+
+                          {post.image && (
+                            <img
+                              className="font-bold text-xl mb-2"
+                              src={post.image}
+                              alt={post.title}
+                            />
+                          )}
+
+                          <div className="font-bold text-xl mb-2">
+                            {post.title}
+                          </div>
+                          <p className="text-gray-700 text-base">
+                            {post.description}
+                          </p>
+                        </div>
                       </div>
                     </Popup>
                   </div>
@@ -120,23 +143,69 @@ const App = (Component, pageProps) => {
               </>
             );
           })}
-          {
-            postLocation ? (
-              (post) => {
-                <Popup
-                      longitude={(postLocation.lng)}
-                      latitude={(postLocation.lat)}
-                      anchor="top"
-                      closeButton={true}
-                      closeOnClick={false}
-                    >
-                      <div>
-                        <h3>ASKDJNASKDJNAKSN</h3>
-                      </div>
-                    </Popup>
-              }
-            ) : null
-          }
+          {postLocation ? (
+            <>
+              <Marker
+                longitude={postLocation.lng}
+                latitude={postLocation.lat}
+                anchor="center"
+              >
+                <svg
+                  style={{
+                    height: `${6 * viewport.zoom}px`,
+                    width: `${6 * viewport.zoom}px`,
+                    fill: "red",
+                  }}
+                  version="1.1"
+                  id="Layer_1"
+                  x="0px"
+                  y="0px"
+                  viewBox="0 0 512 512"
+                >
+                  <g>
+                    <g>
+                      <path
+                        d="M256,0C153.755,0,70.573,83.182,70.573,185.426c0,126.888,165.939,313.167,173.004,321.035
+                        c6.636,7.391,18.222,7.378,24.846,0c7.065-7.868,173.004-194.147,173.004-321.035C441.425,83.182,358.244,0,256,0z M256,278.719
+                        c-51.442,0-93.292-41.851-93.292-93.293S204.559,92.134,256,92.134s93.291,41.851,93.291,93.293S307.441,278.719,256,278.719z"
+                      />
+                    </g>
+                  </g>
+                </svg>
+              </Marker>
+
+
+
+              {/* <Popup
+                longitude={postLocation.lng}
+                latitude={postLocation.lat}
+                anchor="top"
+                closeOnClick={true}
+                onClose={() => {
+                  setPostLocation(null);
+                }}
+                style={{
+                  maxWidth: "400px",
+                }}
+              > */}
+                {/* <button
+                  className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full"
+                  onClick={() => {
+                    return(
+                      <PostEntry/>
+                    )
+                  }}
+                >
+                  
+                  
+                </button> */}
+                <PostEntry onClose={() => {
+                    setPostLocation(null);
+
+                }} />
+              {/* </Popup> */}
+            </>
+          ) : null}
         </Map>
       </div>
     </>

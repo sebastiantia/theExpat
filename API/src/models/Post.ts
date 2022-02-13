@@ -1,14 +1,12 @@
-import { BaseEntity, Column, CreateDateColumn, Double, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Double, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Url } from "url";
 import "reflect-metadata"
+import { User } from "./User";
 
 @Entity()
 export class Post extends BaseEntity{ 
     @PrimaryGeneratedColumn()
     id!: number
-
-    @Column({nullable: true,})
-    userId: string
 
     @Column({nullable: true,})
     title!: string
@@ -17,7 +15,7 @@ export class Post extends BaseEntity{
     description: string
 
     @Column({nullable: true,})
-    image: number
+    image: string
 
     @Column({nullable: true,})
     latitude: number
@@ -25,6 +23,9 @@ export class Post extends BaseEntity{
     @Column({nullable: true,})
     longitude: number
     //max +-180
+
+    @ManyToOne(() => User, user => user.post)
+    creator: User
 
     @Column({nullable: true,})
     visitDate: Date

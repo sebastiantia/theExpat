@@ -5,6 +5,7 @@ import { ConvertBack } from "../convert";
 import { Dialog, Transition } from "@headlessui/react";
 import "../styles/index.css";
 import PostEntry from "../components/PostEntry";
+import SideBar from "../components/SideBar";
 
 const App = (Component, pageProps) => {
   const [posts, setPosts] = useState([]);
@@ -15,16 +16,20 @@ const App = (Component, pageProps) => {
     height: "100vh",
     latitude: 37.6,
     longitude: -95.665,
-    zoom: 3,
+    zoom: 4,
   });
   const [open, setOpen] = useState(false);
 
   const cancelButtonRef = useRef(null);
 
+  const getPosts = async () => {
+    const result = await listPosts();
+    setPosts(result);
+  };
+
   useEffect(() => {
     (async () => {
-      const result = await listPosts();
-      setPosts(result);
+      getPosts();
     })();
   }, []);
 
@@ -32,11 +37,16 @@ const App = (Component, pageProps) => {
   const showAddMarkerPopup = (event) => {
     const info = event.lngLat;
     setPostLocation(info);
-    console.log(postLocation);
   };
 
+  useEffect(() => {
+    console.log(postLocation);
+  }, [postLocation]);
   return (
     <>
+      <div className="flex flex-col items-center justify-center min-h-screen py-2">
+        <SideBar />
+      </div>
       <link
         href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.css"
         rel="stylesheet"
@@ -58,7 +68,7 @@ const App = (Component, pageProps) => {
             zoom: 12,
           }}
           style={{ width: "100vw", height: "100vh" }}
-          mapStyle="mapbox://styles/sebastiantia/ckzgf993a000014o69t7d98rs"
+          mapStyle="mapbox://styles/sebastiantia/ckzkv00yo000315klmq7isiez"
           mapboxAccessToken="pk.eyJ1Ijoic2ViYXN0aWFudGlhIiwiYSI6ImNremdlYmY4NDNxb3cydnA0dWhkOG5iNnEifQ.JkzYAdHjchrXHiSGnZtlZA"
           onDblClick={showAddMarkerPopup}
         >
@@ -73,7 +83,6 @@ const App = (Component, pageProps) => {
                   <div
                     onClick={() => {
                       setShowPopup({ [post.id]: true });
-                      console.log(showPopup);
                     }}
                   >
                     <svg
@@ -111,7 +120,6 @@ const App = (Component, pageProps) => {
                       closeOnClick={false}
                       onClose={() => {
                         setShowPopup({});
-                        console.log(showPopup);
                       }}
                       style={{
                         maxWidth: "400px",
@@ -174,36 +182,27 @@ const App = (Component, pageProps) => {
                 </svg>
               </Marker>
 
-
-
               {/* <Popup
                 longitude={postLocation.lng}
                 latitude={postLocation.lat}
                 anchor="top"
+                closeButton={false}
                 closeOnClick={true}
-                onClose={() => {
-                  setPostLocation(null);
-                }}
                 style={{
                   maxWidth: "400px",
                 }}
-              > */}
-                {/* <button
-                  className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full"
-                  onClick={() => {
-                    return(
-                      <PostEntry/>
-                    )
-                  }}
-                >
-                  
-                  
-                </button> */}
-                <PostEntry onClose={() => {
-                    setPostLocation(null);
+                // onClose={() => {
+                //   console.log("SAkldjnsalkdnals")
+                //   setPostLocation(null);
+                //   getPosts();
+                // }}
+              />  */}
 
-                }} />
-              {/* </Popup> */}
+              <PostEntry
+                location={postLocation}
+                setPostLocation={setPostLocation}
+                getPosts={getPosts}
+              />
             </>
           ) : null}
         </Map>

@@ -1,11 +1,9 @@
 import {
   BaseEntity,
   Column,
-  CreateDateColumn,
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
 } from "typeorm";
 import { Post } from "./Post";
 
@@ -20,15 +18,7 @@ export class User extends BaseEntity{
     @OneToMany(() => Post, post => post.creator)
     post: Post[]
 
-    @Column({unique: true})
-    email!: string;
-
-    @Column({unique: true})
+    @Column()
     password!: string;
 
-    @CreateDateColumn()
-    createdAt: Date;
-    
-    @UpdateDateColumn()
-    updatedAt: Date;
 }

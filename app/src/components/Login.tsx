@@ -1,29 +1,25 @@
 import { Dialog, Transition } from "@headlessui/react";
-import React, { Fragment, useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
-import { createPost } from "../api";
-import { Post } from "../types/Post";
+import React, { Fragment, useState } from "react";
+import { login } from "../api";
+import { User } from "../types/User";
 
-const PostEntry = ({ location, setPostLocation, getPosts, user }) => {
-  const cancelButtonRef = useRef(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const newLng = Math.trunc(location.lng * 1000)
-  const newLat = Math.trunc(location.lat * 1000)
-  console.log(user?.username)
-  const [data, setData] = useState<Post>({ creator: user?.username, longitude: newLng, latitude: newLat, title: null, description: null, image: null, visitDate: null });
+interface LoginProps {
+    setUser: React.Dispatch<React.SetStateAction<User>>
+    user: User
+}
 
 
-  useEffect(() => {
-    console.log(error)
-  }, [error])
+const Login = ({ setShowLogin, setUser }) => {
+  const [loading, setLoading] = useState(false);   
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
   return (
     <>
       <Transition.Root show={true} as={Fragment}>
         <Dialog
           as="div"
           className="fixed z-10 inset-0 overflow-y-auto"
-          initialFocus={cancelButtonRef}
           onClose={() => {
             // setPostLocation(null);
           }}
@@ -67,67 +63,31 @@ const PostEntry = ({ location, setPostLocation, getPosts, user }) => {
                         </div>
                         <div className="block pl-2 font-semibold text-xl self-start text-gray-700 items-start">
                           <h2 className="leading-normal font-bold text-4xl">
-                            Create a Post
+                            Login
                           </h2>
                         </div>
                       </div>
                       <div className="divide-y divide-gray-200">
                         <div className="py-4 text-base leading-6 space-y-2 text-gray-700 sm:text-lg sm:leading-7">
                           <div className="flex flex-col">
-                            <label className="leading-loose">Event Title</label>
+                            <label className="leading-loose">Username</label>
                             <input
                               type="text"
                               className="px-4 py-2 border focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600"
-                              placeholder="Event title"
-
                               onChange={(e) => {
-                                setData({ ...data, title: e.target.value });
+                                setUsername(e.target.value)
                               }}
                             />
                           </div>
+                        </div>
+                        <div className="divide-y divide-gray-200">
                           <div className="flex flex-col">
-                            <label className="leading-loose">
-                              Event Description
-                            </label>
-                            <textarea
-                              className="px-4 py-2 border focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600"
-                              placeholder="Optional"
-                              onChange={(e) => {
-                                setData({
-                                  ...data,
-                                  description: e.target.value,
-                                });
-                              }}
-                            />
-                          </div>
-                          <div className="flex items-center space-x-4">
-                            <div className="flex flex-col">
-                              <label className="leading-loose">
-                                Visit Date
-                              </label>
-                              <div className="relative flex flex-col focus-within:text-gray-600 text-gray-400">
-                                <input
-                                  type="date"
-                                  className="pr-4 pl-10 py-2 border focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600"
-                                  placeholder="25/02/2020"
-                                  onChange={(e) => {
-                                    setData({
-                                      ...data,
-                                      visitDate: e.target.value,
-                                    });
-                                  }}
-                                />
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex flex-col">
-                            <label className="leading-loose">Image URL</label>
+                            <label className="leading-loose">Password</label>
                             <input
                               type="text"
                               className="px-4 py-2 border focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600"
-                              placeholder="Optional"
                               onChange={(e) => {
-                                setData({ ...data, image: e.target.value });
+                                setPassword(e.target.value)
                               }}
                             />
                           </div>
@@ -137,7 +97,8 @@ const PostEntry = ({ location, setPostLocation, getPosts, user }) => {
                             className="bg-red-400 flex justify-center items-center w-full text-white px-4 py-3 rounded-md focus:outline-none hover:bg-red-500"
                             onClick={() => {
                               setLoading(true);
-                              setPostLocation(null);
+
+                              setShowLogin(false);
                             }}
                           >
                             Cancel
@@ -146,15 +107,14 @@ const PostEntry = ({ location, setPostLocation, getPosts, user }) => {
                             className="bg-green-400 flex justify-center items-center w-full text-white px-4 py-3 rounded-md focus:outline-none hover:bg-green-500"
                             disabled={loading}
                             onClick={async () => {
-                              setLoading(true);
-                              console.log(data);
-                              await createPost(data);
-                              setPostLocation(null);
-                              getPosts();
-                              
+                              setLoading(true)
+                              const {data} = await login({username: username, password: password}) 
+                            //   console.log(data.user); 
+                              setUser(data.user)                           
+                              setShowLogin(false);
                             }}
                           >
-                            {loading ? "Loading..." : "Create Entry"}
+                            {loading ? "Loading..." : "Log in"}
                           </button>
                         </div>
                       </div>
@@ -170,4 +130,4 @@ const PostEntry = ({ location, setPostLocation, getPosts, user }) => {
   );
 };
 
-export default PostEntry;
+export default Login;

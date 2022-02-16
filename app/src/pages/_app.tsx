@@ -1,11 +1,14 @@
 import Map, { Marker, Popup } from "react-map-gl";
 import React, { useState, useEffect, useRef, Fragment } from "react";
-import { listPosts } from "../api";
+import { listPosts, me } from "../api";
 import { ConvertBack } from "../convert";
 import { Dialog, Transition } from "@headlessui/react";
 import "../styles/index.css";
 import PostEntry from "../components/PostEntry";
 import SideBar from "../components/SideBar";
+import Login from "../components/Login";
+
+
 
 const App = (Component, pageProps) => {
   const [posts, setPosts] = useState([]);
@@ -20,7 +23,8 @@ const App = (Component, pageProps) => {
   });
   const [open, setOpen] = useState(false);
 
-  const cancelButtonRef = useRef(null);
+  const [user, setUser] = useState(null);
+  const [message, setMessage] = useState({});
 
   const getPosts = async () => {
     const result = await listPosts();
@@ -30,8 +34,23 @@ const App = (Component, pageProps) => {
   useEffect(() => {
     (async () => {
       getPosts();
+      const data = await me();
+      setUser(data);
     })();
   }, []);
+
+  useEffect(() => {
+    (async () => {
+      getPosts();
+    })();
+  }, []);
+
+  // useEffect(() => {
+  //   (async () => {
+  //     setMessage(user)
+  //     console.log("Message is:", message)
+  //   })
+  // },[user])
 
   // console.log(showPopup);
   const showAddMarkerPopup = (event) => {
@@ -39,13 +58,11 @@ const App = (Component, pageProps) => {
     setPostLocation(info);
   };
 
-  useEffect(() => {
-    console.log(postLocation);
-  }, [postLocation]);
   return (
     <>
+      {/* <Login/> */}
       <div className="flex flex-col items-center justify-center min-h-screen py-2">
-        <SideBar />
+        <SideBar setUser={setUser} user={user} />
       </div>
       <link
         href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.css"
@@ -69,7 +86,7 @@ const App = (Component, pageProps) => {
           }}
           style={{ width: "100vw", height: "100vh" }}
           mapStyle="mapbox://styles/sebastiantia/ckzkv00yo000315klmq7isiez"
-          mapboxAccessToken="pk.eyJ1Ijoic2ViYXN0aWFudGlhIiwiYSI6ImNremdlYmY4NDNxb3cydnA0dWhkOG5iNnEifQ.JkzYAdHjchrXHiSGnZtlZA"
+          mapboxAccessToken= "pk.eyJ1Ijoic2ViYXN0aWFudGlhIiwiYSI6ImNremdlYmY4NDNxb3cydnA0dWhkOG5iNnEifQ.JkzYAdHjchrXHiSGnZtlZA"
           onDblClick={showAddMarkerPopup}
         >
           {posts.map((post) => {
@@ -122,7 +139,7 @@ const App = (Component, pageProps) => {
                         setShowPopup({});
                       }}
                       style={{
-                        maxWidth: "400px",
+                        maxWidth: "800px",
                       }}
                     >
                       <div className="max-w-sm rounded overflow-hidden shadow-lg">
@@ -133,16 +150,23 @@ const App = (Component, pageProps) => {
                             <img
                               className="font-bold text-xl mb-2"
                               src={post.image}
-                              alt={post.title}
                             />
                           )}
 
-                          <div className="font-bold text-xl mb-2">
+                          <div className="font-bold text-xl mb-">
                             {post.title}
                           </div>
+
+                          <p className="font-light">User: {post?.creator}</p>
+
                           <p className="text-gray-700 text-base">
                             {post.description}
                           </p>
+                          {post?.visitDate ? (
+                            <p className="mt-2 font-sm">
+                              Visit Date: {post.visitDate.slice(0, 10)}
+                            </p>
+                          ) : null}
                         </div>
                       </div>
                     </Popup>
@@ -151,7 +175,8 @@ const App = (Component, pageProps) => {
               </>
             );
           })}
-          {postLocation ? (
+
+          {postLocation && user ? (
             <>
               <Marker
                 longitude={postLocation.lng}
@@ -182,26 +207,11 @@ const App = (Component, pageProps) => {
                 </svg>
               </Marker>
 
-              {/* <Popup
-                longitude={postLocation.lng}
-                latitude={postLocation.lat}
-                anchor="top"
-                closeButton={false}
-                closeOnClick={true}
-                style={{
-                  maxWidth: "400px",
-                }}
-                // onClose={() => {
-                //   console.log("SAkldjnsalkdnals")
-                //   setPostLocation(null);
-                //   getPosts();
-                // }}
-              />  */}
-
               <PostEntry
                 location={postLocation}
                 setPostLocation={setPostLocation}
                 getPosts={getPosts}
+                user={user}
               />
             </>
           ) : null}

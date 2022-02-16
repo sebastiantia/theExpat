@@ -24,8 +24,13 @@ export class Post extends BaseEntity{
     longitude: number
     //max +-180
 
+    //create a left join on user
+
+    @Column({nullable: true})
+    creator: string
+    
     @ManyToOne(() => User, user => user.post)
-    creator: User
+    creatorId: User
 
     @Column({nullable: true,})
     visitDate: Date

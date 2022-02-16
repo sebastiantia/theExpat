@@ -2,6 +2,7 @@ import { Router } from "express";
 import { Post } from "../models/Post";
 import { getConnection } from "typeorm";
 import {getRepository} from "typeorm";
+import { User } from "src/models/User";
 
 
 export const router = Router();
@@ -20,20 +21,20 @@ router.get("/", async (_, res) => {
 
 });
 
-router.post('/add', async (req, res, next) => {
+router.post('/add', async (req, res) => {
 
   const post = await getConnection()
   .createQueryBuilder()
   .insert()
   .into(Post)
   .values( {
+    creator: req.body.creator,
     title: req.body.title,
     description: req.body.description,
     image: req.body.image,
     latitude: req.body.latitude,
     longitude: req.body.longitude,
     visitDate: req.body.visitDate,
-
   })
   .returning("*")
   .execute()

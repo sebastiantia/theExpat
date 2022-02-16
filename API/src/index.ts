@@ -9,11 +9,13 @@ import cors from "cors";
 import Redis from "ioredis";
 import { PostRouter } from "./routes/post";
 import { Post } from "./models/Post";
+import { UserRouter } from "./routes/user";
+import "reflect-metadata"
 
 const main = async () => {
   const app = express();
 
-  await createConnection({
+  const con = await createConnection({
     type: "postgres",
     database: "proj",
     username: "postgres",
@@ -23,6 +25,8 @@ const main = async () => {
     synchronize: true,
     entities: [Post, User],
   });
+
+
   app.set("trust proxy", 1);
 
   const RedisStore = connectRedis(session);
@@ -57,7 +61,8 @@ const main = async () => {
       resave: false,
     })
   );
-  app.use("/api", PostRouter);
+  app.use("/api/post", PostRouter);
+  app.use("/api/user", UserRouter);
 
   app.get("/", (_, res) => {
     res.json({

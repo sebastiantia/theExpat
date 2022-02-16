@@ -5,3 +5,5 @@ dist
 .next
 
 .env
+
+output.css

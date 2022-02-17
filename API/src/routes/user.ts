@@ -6,7 +6,6 @@ import { User } from "../models/User";
 export const router = Router();
 
 router.get("/me", async (req, res): Promise<void> => {
-  console.log(req);
   if (!req.session.userId) {
     res.json(null);
     return;

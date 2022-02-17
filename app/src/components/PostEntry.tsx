@@ -148,7 +148,21 @@ const PostEntry = ({ location, setPostLocation, getPosts, user }) => {
                             onClick={async () => {
                               setLoading(true);
                               console.log(data);
-                              await createPost(data);
+                              // await createPost(data);
+                              const {url} = await fetch("http://localhost:4000/s3Url")
+                              console.log(url)
+
+                              // await fetch(url, {
+                              //   method: "PUT",
+                              //   headers: {
+                              //     "Content-Type": "multipart/form-data"
+                              //   },
+                              //   body: data.image
+                              // })
+
+                              // const imageUrl = url.split('?')[0]
+                              // console.log(imageUrl);
+
                               setPostLocation(null);
                               getPosts();
                               

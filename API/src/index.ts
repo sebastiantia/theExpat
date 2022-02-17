@@ -11,6 +11,8 @@ import { PostRouter } from "./routes/post";
 import { Post } from "./models/Post";
 import { UserRouter } from "./routes/user";
 import "reflect-metadata"
+import { S3 } from "aws-sdk";
+import { generateUploadURL } from "./s3"
 
 const main = async () => {
   const app = express();
@@ -64,11 +66,12 @@ const main = async () => {
   app.use("/api/post", PostRouter);
   app.use("/api/user", UserRouter);
 
-  app.get("/", (_, res) => {
-    res.json({
-      message: "Hello World!",
-    });
-  });
+  app.get('/s3Url', async ( req, res) => {
+    const url =  await generateUploadURL()
+    console.log("url:, ", url);
+    res.json(url)
+
+  })
 
   // app.use((req, res, next) => {
   //   const error = new Error(`Not Found - ${req.originalUrl}`);

@@ -6,9 +6,8 @@ const randomBytes = promisify(crypto.randomBytes)
 
 const region = "us-east-1"
 const bucketName = "theexpat"
-const accessKeyId = process.env.AWS_ACCESS_KEY_ID
-const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY
-
+const accessKeyId = "AKIA3BE3TL44IFS7XLOL"
+const secretAccessKey = "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"
 //setting s3 server
 const s3 = new aws.S3({
     region,
@@ -24,11 +23,12 @@ const s3 = new aws.S3({
     const params = ({
       Bucket: bucketName,
       Key: imageName,
-      Expires: 60
+      Expires: 60,
+      ACL: "public-read",
+
     })
     
     const uploadURL = await s3.getSignedUrlPromise('putObject', params)
-    console.log("TEST: ",accessKeyId)
     console.log("upload url:," ,uploadURL)
     return uploadURL
   }

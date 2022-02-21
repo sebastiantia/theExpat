@@ -6,6 +6,6 @@ export type Post = {
     latitude: number;
     longitude: number;
     visitDate: string;
-    image: string;
+    image: any;
     creator: string;
 }

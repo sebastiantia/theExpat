@@ -3,20 +3,27 @@ import React, { Fragment, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { createPost } from "../api";
 import { Post } from "../types/Post";
+import axios from "axios";
 
 const PostEntry = ({ location, setPostLocation, getPosts, user }) => {
   const cancelButtonRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const newLng = Math.trunc(location.lng * 1000)
-  const newLat = Math.trunc(location.lat * 1000)
-  console.log(user?.username)
-  const [data, setData] = useState<Post>({ creator: user?.username, longitude: newLng, latitude: newLat, title: null, description: null, image: null, visitDate: null });
-
+  const newLng = Math.trunc(location.lng * 100000);
+  const newLat = Math.trunc(location.lat * 100000);
+  const [data, setData] = useState<Post>({
+    creator: user?.username,
+    longitude: newLng,
+    latitude: newLat,
+    title: null,
+    description: null,
+    image: null,
+    visitDate: null,
+  });
 
   useEffect(() => {
-    console.log(error)
-  }, [error])
+    console.log(error);
+  }, [error]);
   return (
     <>
       <Transition.Root show={true} as={Fragment}>
@@ -79,7 +86,6 @@ const PostEntry = ({ location, setPostLocation, getPosts, user }) => {
                               type="text"
                               className="px-4 py-2 border focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600"
                               placeholder="Event title"
-
                               onChange={(e) => {
                                 setData({ ...data, title: e.target.value });
                               }}
@@ -123,11 +129,11 @@ const PostEntry = ({ location, setPostLocation, getPosts, user }) => {
                           <div className="flex flex-col">
                             <label className="leading-loose">Image URL</label>
                             <input
-                              type="text"
+                              type="file"
                               className="px-4 py-2 border focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600"
                               placeholder="Optional"
                               onChange={(e) => {
-                                setData({ ...data, image: e.target.value });
+                                setData({ ...data, image: e.target.files[0] });
                               }}
                             />
                           </div>
@@ -147,25 +153,42 @@ const PostEntry = ({ location, setPostLocation, getPosts, user }) => {
                             disabled={loading}
                             onClick={async () => {
                               setLoading(true);
+                              
+                              const url = await axios.get(
+                                "http://localhost:4000/s3Url",
+                                {
+                                  headers: {
+                                    "Content-Type": "multipart/form-data",
+                                  },
+                                  withCredentials: true,
+                                  
+                                }
+                              );
+
+                              // console.log(url.data);
+
+                              console.log("IMAGE FILE : ", data.image )
+
+                              try {
+                                const pog = await axios.put(
+                                  url.data,
+                                  data.image,
+                                  {
+                                    headers: {
+                                      "Content-Type": data.image.type,
+                                    },
+                                  }
+                                );
+                              } catch (e) {
+                                console.log(e);
+                              }
+                              const imageUrl = url.data.split("?")[0];
+                              
                               console.log(data);
-                              // await createPost(data);
-                              const {url} = await fetch("http://localhost:4000/s3Url")
-                              console.log(url)
-
-                              // await fetch(url, {
-                              //   method: "PUT",
-                              //   headers: {
-                              //     "Content-Type": "multipart/form-data"
-                              //   },
-                              //   body: data.image
-                              // })
-
-                              // const imageUrl = url.split('?')[0]
-                              // console.log(imageUrl);
+                              await createPost({ ...data, image: imageUrl });
 
                               setPostLocation(null);
                               getPosts();
-                              
                             }}
                           >
                             {loading ? "Loading..." : "Create Entry"}

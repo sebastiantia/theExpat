@@ -11,13 +11,12 @@ import { PostRouter } from "./routes/post";
 import { Post } from "./models/Post";
 import { UserRouter } from "./routes/user";
 import "reflect-metadata"
-import { S3 } from "aws-sdk";
 import { generateUploadURL } from "./s3"
 
 const main = async () => {
   const app = express();
 
-  const con = await createConnection({
+  await createConnection({
     type: "postgres",
     database: "proj",
     username: "postgres",
@@ -67,6 +66,7 @@ const main = async () => {
   app.use("/api/user", UserRouter);
 
   app.get('/s3Url', async ( req, res) => {
+    console.log(req.body);
     const url =  await generateUploadURL()
     console.log("url:, ", url);
     res.json(url)

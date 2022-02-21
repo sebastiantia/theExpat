@@ -1,10 +1,7 @@
 import { Router } from "express";
 import { Post } from "../models/Post";
 import { getConnection } from "typeorm";
-import { getRepository } from "typeorm";
-import { User } from "src/models/User";
-import multer from "multer";
-
+import { isAuth } from "../middleware/isAuth"
 export const router = Router();
 
 // const postRepo = getRepository(Post);
@@ -39,6 +36,48 @@ router.post("/add", async (req, res) => {
 
   res.json(post);
 });
+
+
+router.get("/get_user_posts", isAuth, async (_, res) => {
+  const photos = await getConnection()
+    .createQueryBuilder()
+    .select("post")
+    .from(Post, "post")
+    .where("post.creator = :userId", { userId: res.locals.user.username })
+    .getMany();
+
+  res.json(photos);
+});
+
+router.post("/update" , async (req, _) => {
+  const { id }: { id: number } = req.body;
+  const result = await getConnection()
+  .createQueryBuilder()
+  .update(Post)
+  .where("post.id = :id", { id })
+  .set({ description : req.body.description,
+          title: req.body.title,
+          visitDate: req.body.visitDate,
+  })
+
+  .returning("*")
+  .execute();
+  return result.raw[0]
+})
+
+router.post("/singlepost", async(req, res) => {
+  const { id }: { id: number } = req.body;
+  const post = await getConnection()
+  .createQueryBuilder()
+  .select("post")
+  .from(Post, "post")
+  .where("post.id = :id", { id})
+  .getOne()
+
+  res.json(post)
+
+})
+
 
 router.post("/delete", async (req, res) => {
   const { id }: { id: number } = req.body;

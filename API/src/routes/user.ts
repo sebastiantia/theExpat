@@ -1,5 +1,6 @@
 import argon2 from "argon2";
 import { Router } from "express";
+import { isAuth } from "../middleware/isAuth";
 import { getConnection } from "typeorm";
 import { User } from "../models/User";
 
@@ -14,7 +15,18 @@ router.get("/me", async (req, res): Promise<void> => {
   res.json(user);
 });
 
+
+
+
 router.post("/register", async (req, res) => {
+  if(req.body.username.length < 3){
+    res.json({ usererror: "Username is too short :("})
+    return;
+  }
+  if(req.body.password.length < 3){
+    res.json({ passworderror: "Password is too short :( "})
+    return;
+  }
   const hashed = await argon2.hash(req.body.password);
   let user;
   try {
@@ -41,12 +53,12 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   const user = await User.findOne({ username: req.body.username });
   if (!user) {
-    res.json({ error: "no user found" });
+    res.json({ usererror: "No user found :(" });
     return;
   }
   const valid = await argon2.verify(user!.password, req.body.password);
   if (!valid) {
-    res.json({ error: "wrong password" });
+    res.json({ passworderror: "Wrong password :(" });
     return;
   }
   req.session!.userId = user.id;
@@ -55,7 +67,7 @@ router.post("/login", async (req, res) => {
 });
 
 
-router.post("/logout", async (req, res) => {
+router.post("/logout", isAuth, async (req, res) => {
   req.session.destroy(async (e) => {
     if (e) {
       console.log(e);

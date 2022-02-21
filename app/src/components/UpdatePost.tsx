@@ -1,14 +1,35 @@
 import { Dialog, Transition } from "@headlessui/react";
-import React, { Fragment, useState } from "react";
-import { register } from "../api";
+import axios from "axios";
+import React, { Fragment, useEffect, useState } from "react";
+import { createPost, singlePost } from "../api";
+import { Post } from "../types/Post";
 
-
-const Signup = ({ setShowSignup, setUser }) => {
+const Update = ({ setupdateModal, setupdatePost, updatePost }) => {
   const [loading, setLoading] = useState(false);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [usererror, setuserError] = useState("");
-  const [passworderror, setpasswordError] = useState("");
+  const [userPost, setuserPost] = useState({
+    title: null,
+    description: null,
+    image: null,
+    visitDate: null,
+  });
+  
+
+
+  const viewUserPosts = async () => {
+    const result = await singlePost({id: updatePost});
+    setuserPost(result);
+  };
+
+  useEffect(() => {
+    (() => {
+      viewUserPosts();
+    
+    })();
+  }, []);
+
+ 
+
+  console.log(userPost);
 
   return (
     <>
@@ -59,64 +80,76 @@ const Signup = ({ setShowSignup, setUser }) => {
                         </div>
                         <div className="block pl-2 font-semibold text-xl self-start text-gray-700 items-start">
                           <h2 className="leading-normal font-bold text-4xl">
-                            Sign Up
+                            Update
                           </h2>
                         </div>
                       </div>
                       <div className="divide-y divide-gray-200">
                         <div className="py-4 text-base leading-6 space-y-2 text-gray-700 sm:text-lg sm:leading-7">
                           <div className="flex flex-col">
-                            <label className="leading-loose">Username</label>
+                            <label className="leading-loose">Event Title</label>
                             <input
                               type="text"
                               className="px-4 py-2 border focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600"
+                              value={userPost.title}
                               onChange={(e) => {
-                                setUsername(e.target.value)
+                                setuserPost({ ...userPost, title: e.target.value });
                               }}
                             />
                           </div>
-                        </div>
-                        <div className="divide-y divide-gray-200">
                           <div className="flex flex-col">
-                            <label className="leading-loose">Password</label>
-                            <input
-                              type="password"
+                            <label className="leading-loose">
+                              Event Description
+                            </label>
+                            <textarea
                               className="px-4 py-2 border focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600"
+                              value={userPost.description}
                               onChange={(e) => {
-                                setPassword(e.target.value)
+                                setuserPost({
+                                  ...userPost,
+                                  description: e.target.value,
+                                });
+                              }}
+                            />
+                          </div>
+                          <div className="flex items-center space-x-4">
+                            <div className="flex flex-col">
+                              <label className="leading-loose">
+                                Visit Date
+                              </label>
+                              <div className="relative flex flex-col focus-within:text-gray-600 text-gray-400">
+                                <input
+                                  type="date"
+                                  className="pr-4 pl-10 py-2 border focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600"
+                                //   value={userPost.visitDate}
+                                  onChange={(e) => {
+                                    setuserPost({
+                                      ...userPost,
+                                      visitDate: e.target.value,
+                                    });
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex flex-col">
+                            <label className="leading-loose">Image URL</label>
+                            <input
+                              type="file"
+                              className="px-4 py-2 border focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600"
+                                placeholder={userPost.image}
+                              onChange={(e) => {
+                                setuserPost({ ...userPost, image: e.target.files[0] });
                               }}
                             />
                           </div>
                         </div>
-                        {usererror || passworderror ?
-                        <div
-                          className="bg-red-100 border mt-4 border-red-400 text-red-700 px-4 py-3 rounded relative"
-                          role="alert"
-                        >
-                          <strong className="font-bold">Holy smokes!{" "}</strong>
-                          <span className="block sm:inline">
-                            {usererror ? usererror : null}
-                            {passworderror ? passworderror : null}
-                          </span>
-                          <span className="absolute top-0 bottom-0 right-0 px-4 py-3">
-                            <svg
-                              className="fill-current h-6 w-6 text-red-500"
-                              role="button"
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 20 20"
-                            >
-                              <title>Close</title>
-                              <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
-                            </svg>
-                          </span>
-                        </div> : null}
                         <div className="pt-4 flex items-center space-x-4">
                           <button
                             className="bg-red-400 flex justify-center items-center w-full text-white px-4 py-3 rounded-md focus:outline-none hover:bg-red-500"
                             onClick={() => {
                               setLoading(true);
-                                
-                              setShowSignup(false);
+                              setupdateModal(false);
                             }}
                           >
                             Cancel
@@ -127,28 +160,44 @@ const Signup = ({ setShowSignup, setUser }) => {
                             onClick={async () => {
                               setLoading(true);
 
-                              const result = await register({username: username, password: password})
+                              // const url = await axios.get(
+                              //   "http://localhost:4000/s3Url",
+                              //   {
+                              //     headers: {
+                              //       "Content-Type": "multipart/form-data",
+                              //     },
+                              //     withCredentials: true,
 
-                              if(result.usererror){
-                                setpasswordError("")
-                                setuserError(result.usererror)
-                                setLoading(false)
-                              }
-                              if(result.passworderror){
-                                setuserError("")
-                                setpasswordError(result.passworderror)
-                                setLoading(false)
-                              }
-                              if(result.username && result.password){
-                                console.log(result);
-                                setUser(result);
-                                setLoading(false)
-                                setShowSignup(false);
-                              }
+                              //   }
+                              // );
 
+                              // console.log(url.data);
+
+                              // console.log("IMAGE FILE : ", data.image )
+
+                              // try {
+                              //   const pog = await axios.put(
+                              //     url.data,
+                              //     data.image,
+                              //     {
+                              //       headers: {
+                              //         "Content-Type": data.image.type,
+                              //       },
+                              //     }
+                              //   );
+                              // } catch (e) {
+                              //   console.log(e);
+                              // }
+                              // const imageUrl = url.data.split("?")[0];
+
+                              // console.log(data);
+                              // await createPost({ ...data, image: imageUrl });
+
+                              // setPostLocation(null);
+                              // getPosts();
                             }}
                           >
-                            {loading ? "Loading..." : "Sign up"}
+                            {loading ? "Loading..." : "Create Entry"}
                           </button>
                         </div>
                       </div>
@@ -164,4 +213,4 @@ const Signup = ({ setShowSignup, setUser }) => {
   );
 };
 
-export default Signup;
+export default Update;

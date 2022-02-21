@@ -1,4 +1,4 @@
-import Map, { Marker, Popup } from "react-map-gl";
+import Map, { FullscreenControl, GeolocateControl, Marker, Popup } from "react-map-gl";
 import React, { useState, useEffect, useRef, Fragment } from "react";
 import { listPosts, me } from "../api";
 import { ConvertBack } from "../convert";
@@ -7,7 +7,6 @@ import "../styles/index.css";
 import PostEntry from "../components/PostEntry";
 import SideBar from "../components/SideBar";
 import Login from "../components/Login";
-
 
 
 const App = (Component, pageProps) => {
@@ -25,6 +24,9 @@ const App = (Component, pageProps) => {
 
   const [user, setUser] = useState(null);
   const [message, setMessage] = useState({});
+
+  const [mapStyle, setmapStyle] = useState("mapbox://styles/sebastiantia/ckzkv00yo000315klmq7isiez");
+
 
   const getPosts = async () => {
     const result = await listPosts();
@@ -62,7 +64,7 @@ const App = (Component, pageProps) => {
     <>
       {/* <Login/> */}
       <div className="flex flex-col items-center justify-center min-h-screen py-2">
-        <SideBar setUser={setUser} user={user} />
+        <SideBar setUser={setUser} user={user} setmapStyle={setmapStyle} />
       </div>
       <link
         href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.css"
@@ -85,8 +87,8 @@ const App = (Component, pageProps) => {
             zoom: 12,
           }}
           style={{ width: "100vw", height: "100vh" }}
-          mapStyle="mapbox://styles/sebastiantia/ckzkv00yo000315klmq7isiez"
-          mapboxAccessToken= "pk.eyJ1Ijoic2ViYXN0aWFudGlhIiwiYSI6ImNremdlYmY4NDNxb3cydnA0dWhkOG5iNnEifQ.JkzYAdHjchrXHiSGnZtlZA"
+          mapStyle={mapStyle}
+          mapboxAccessToken="pk.eyJ1Ijoic2ViYXN0aWFudGlhIiwiYSI6ImNremdlYmY4NDNxb3cydnA0dWhkOG5iNnEifQ.JkzYAdHjchrXHiSGnZtlZA"
           onDblClick={showAddMarkerPopup}
         >
           {posts.map((post) => {
@@ -148,25 +150,28 @@ const App = (Component, pageProps) => {
 
                           {post.image && (
                             <img
-                              className="font-bold text-xl mb-2"
+                              className="font-bold max-h-80  text-xl= mb-2"
                               src={post.image}
                             />
                           )}
 
-                          <div className="font-bold text-xl mb-">
+                          <div className="text-gray-900 text-xl font-medium mb-">
                             {post.title}
                           </div>
 
-                          <p className="font-light">User: {post?.creator}</p>
+                        
 
                           <p className="text-gray-700 text-base">
                             {post.description}
                           </p>
                           {post?.visitDate ? (
-                            <p className="mt-2 font-sm">
+                            <p className=" text-gray-600 text-xs">
                               Visit Date: {post.visitDate.slice(0, 10)}
                             </p>
                           ) : null}
+                            <p className=" text-gray-600 text-xs">User: {post?.creator}</p>
+                          
+                          
                         </div>
                       </div>
                     </Popup>
@@ -215,6 +220,8 @@ const App = (Component, pageProps) => {
               />
             </>
           ) : null}
+           <GeolocateControl style={{position:"relative", top:"90px", left: "-30px"}} />
+           <FullscreenControl style={{position:"relative", top:"15px", left: "-30px"}}/>
         </Map>
       </div>
     </>

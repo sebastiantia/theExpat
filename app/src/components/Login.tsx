@@ -4,15 +4,17 @@ import { login } from "../api";
 import { User } from "../types/User";
 
 interface LoginProps {
-    setUser: React.Dispatch<React.SetStateAction<User>>
-    user: User
+  setUser: React.Dispatch<React.SetStateAction<User>>;
+  user: User;
 }
 
-
 const Login = ({ setShowLogin, setUser }) => {
-  const [loading, setLoading] = useState(false);   
+  const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [usererror, setuserError] = useState("");
+  const [passworderror, setpasswordError] = useState("");
+
 
   return (
     <>
@@ -75,7 +77,7 @@ const Login = ({ setShowLogin, setUser }) => {
                               type="text"
                               className="px-4 py-2 border focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600"
                               onChange={(e) => {
-                                setUsername(e.target.value)
+                                setUsername(e.target.value);
                               }}
                             />
                           </div>
@@ -84,20 +86,41 @@ const Login = ({ setShowLogin, setUser }) => {
                           <div className="flex flex-col">
                             <label className="leading-loose">Password</label>
                             <input
-                              type="text"
+                              type="password"
                               className="px-4 py-2 border focus:ring-gray-500 focus:border-gray-900 w-full sm:text-sm border-gray-300 rounded-md focus:outline-none text-gray-600"
                               onChange={(e) => {
-                                setPassword(e.target.value)
+                                setPassword(e.target.value);
                               }}
                             />
                           </div>
                         </div>
+                       {usererror || passworderror ?
+                        <div
+                          className="bg-red-100 border mt-4 border-red-400 text-red-700 px-4 py-3 rounded relative"
+                          role="alert"
+                        >
+                          <strong className="font-bold">Holy smokes!{" "}</strong>
+                          <span className="block sm:inline">
+                            {usererror ? usererror : null}
+                            {passworderror ? passworderror : null}
+                          </span>
+                          <span className="absolute top-0 bottom-0 right-0 px-4 py-3">
+                            <svg
+                              className="fill-current h-6 w-6 text-red-500"
+                              role="button"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 20 20"
+                            >
+                              <title>Close</title>
+                              <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
+                            </svg>
+                          </span>
+                        </div> : null}
                         <div className="pt-4 flex items-center space-x-4">
                           <button
                             className="bg-red-400 flex justify-center items-center w-full text-white px-4 py-3 rounded-md focus:outline-none hover:bg-red-500"
                             onClick={() => {
                               setLoading(true);
-
                               setShowLogin(false);
                             }}
                           >
@@ -107,11 +130,27 @@ const Login = ({ setShowLogin, setUser }) => {
                             className="bg-green-400 flex justify-center items-center w-full text-white px-4 py-3 rounded-md focus:outline-none hover:bg-green-500"
                             disabled={loading}
                             onClick={async () => {
-                              setLoading(true)
-                              const {data} = await login({username: username, password: password}) 
-                            //   console.log(data.user); 
-                              setUser(data.user)                           
-                              setShowLogin(false);
+                              setLoading(true);
+                              const { data } = await login({
+                                username: username,
+                                password: password,
+                              });
+                              console.log(data);
+
+                              if (data.usererror) {
+                                setpasswordError("")
+                                setuserError(data.usererror)
+                                setLoading(false)
+                              }
+                              if (data.passworderror){
+                                setuserError("")
+                                setpasswordError(data.passworderror)
+                                setLoading(false)
+                              }
+                              if (data.user) {
+                                setUser(data.user);
+                                setShowLogin(false);
+                              }
                             }}
                           >
                             {loading ? "Loading..." : "Log in"}

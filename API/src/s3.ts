@@ -1,13 +1,15 @@
 import aws from 'aws-sdk'
 import crypto from 'crypto'
 import { promisify } from "util"
+import "dotenv-safe/config";
+
 
 const randomBytes = promisify(crypto.randomBytes)
 
 const region = "us-east-1"
 const bucketName = "theexpat"
-const accessKeyId = "AKIA3BE3TL44IFS7XLOL"
-const secretAccessKey = "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"
+const accessKeyId = process.env.AWS_ACCESS_KEY_ID
+const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY
 //setting s3 server
 const s3 = new aws.S3({
     region,

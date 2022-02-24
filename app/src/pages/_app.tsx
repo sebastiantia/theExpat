@@ -1,4 +1,4 @@
-import Map, { FullscreenControl, GeolocateControl, Marker, Popup } from "react-map-gl";
+import Map, { FullscreenControl, GeolocateControl, Marker, NavigationControl, Popup } from "react-map-gl";
 import React, { useState, useEffect, useRef, Fragment } from "react";
 import { listPosts, me } from "../api";
 import { ConvertBack } from "../convert";
@@ -90,6 +90,7 @@ const App = (Component, pageProps) => {
           mapStyle={mapStyle}
           mapboxAccessToken="pk.eyJ1Ijoic2ViYXN0aWFudGlhIiwiYSI6ImNremdlYmY4NDNxb3cydnA0dWhkOG5iNnEifQ.JkzYAdHjchrXHiSGnZtlZA"
           onDblClick={showAddMarkerPopup}
+          renderWorldCopies={true}
         >
           {posts.map((post) => {
             return (
@@ -220,8 +221,11 @@ const App = (Component, pageProps) => {
               />
             </>
           ) : null}
-           <GeolocateControl style={{position:"relative", top:"90px", left: "-30px"}} />
-           <FullscreenControl style={{position:"relative", top:"15px", left: "-30px"}}/>
+          {/* style={{position:"relative", top:"90px", left: "-30px"}} */}
+           <GeolocateControl position='top-left' trackUserLocation={true}/>
+           <FullscreenControl position="top-left"/>
+           <NavigationControl position="top-left" visualizePitch={true}/>
+
         </Map>
       </div>
     </>

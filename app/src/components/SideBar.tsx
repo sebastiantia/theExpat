@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { logout, me } from "../api";
+import { getUserPosts, listPosts, logout, me } from "../api";
 import { User } from "../types/User";
 import Login from "./Login";
 import MapStyles from "./MapStyles";
@@ -10,9 +10,10 @@ interface SidebarProps {
   user: User | null;
   setUser: React.Dispatch<React.SetStateAction<User>>;
   setmapStyle: React.Dispatch<React.SetStateAction<string>>;
+  setPosts: React.Dispatch<React.SetStateAction<[]>>;
 }
 
-const SideBar = ({ user, setUser, setmapStyle }: SidebarProps) => {
+const SideBar = ({ user, setUser, setmapStyle, setPosts }: SidebarProps) => {
   const [showSidebar, setShowSidebar] = useState(false);
   const [showviewPosts, setshowviewPosts] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
@@ -187,46 +188,107 @@ const SideBar = ({ user, setUser, setmapStyle }: SidebarProps) => {
           </>
         ) : (
           <>
-          
-          <div className=" motion-reduce:transform-none hover:text-orange-200 ">
-            <button
-              className=" hover:scale-110 motion-reduce:transform-none hover:text-orange-200 flex mt-5 items-center "
-              onClick={() => {
-                if (showLogin) {
-                  setShowLogin(false);
-                  setshowviewPosts(true);
-                } else if (showMapStyles) {
-                  setShowMapStyles(false);
-                  setshowviewPosts(true);
-                } else if (showSignup) {
-                  setShowSignup(false);
-                  setshowviewPosts(true);
-                } else {
-                  setshowviewPosts(true);
-                }
-              }}
-            >
-              <svg
-                className="h-8 w-8 text-orange "
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                stroke-width="2"
-                stroke="currentColor"
-                fill="none"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+            <div className=" motion-reduce:transform-none hover:text-orange-200 ">
+              <button
+                className=" hover:scale-110 motion-reduce:transform-none hover:text-orange-200 flex mt-5 items-center "
+                onClick={() => {
+                  if (showLogin) {
+                    setShowLogin(false);
+                    setshowviewPosts(true);
+                  } else if (showMapStyles) {
+                    setShowMapStyles(false);
+                    setshowviewPosts(true);
+                  } else if (showSignup) {
+                    setShowSignup(false);
+                    setshowviewPosts(true);
+                  } else {
+                    setshowviewPosts(true);
+                  }
+                }}
               >
-                
-                <path stroke="none" d="M0 0h24v24H0z" />{" "}
-                <path d="M17.905 13.057c2.208 1.756 3.436 3.308 3.012 4.035-.67 1.146-5.204-.204-10.129-3.016-4.924-2.812-8.374-6.022-7.705-7.168.418-.716 2.347-.458 4.936.524" />{" "}
-                <circle cx="12" cy="12" r="6" />
-              </svg>
-              <h2 className="hover:scale-110 motion-reduce:transform-none hover:text-orange-200  pl-1 text-white text-2xl">
-                View your posts
-              </h2>
-            </button>
+                <svg
+                  className="h-8 w-8 text-orange "
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  stroke="currentColor"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" />{" "}
+                  <path d="M17.905 13.057c2.208 1.756 3.436 3.308 3.012 4.035-.67 1.146-5.204-.204-10.129-3.016-4.924-2.812-8.374-6.022-7.705-7.168.418-.716 2.347-.458 4.936.524" />{" "}
+                  <circle cx="12" cy="12" r="6" />
+                </svg>
+                <h2 className="hover:scale-110 motion-reduce:transform-none hover:text-orange-200  pl-1 text-white text-2xl">
+                  View your posts
+                </h2>
+              </button>
             </div>
+            <div className=" motion-reduce:transform-none hover:text-orange-200 ">
+              <button
+                className=" hover:scale-110 motion-reduce:transform-none hover:text-orange-200 flex mt-5 items-center "
+                onClick={async () => {
+                  setPosts(await getUserPosts());
+                }}
+              >
+                <svg
+                  className="h-8 w-8 text-orange"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                  />
+                </svg>
+
+                <h2 className="hover:scale-110 motion-reduce:transform-none hover:text-orange-200  pl-1 text-white text-2xl">
+                  Show your posts only
+                </h2>
+              </button>
+              </div>
+              <button
+                className=" hover:scale-110 motion-reduce:transform-none hover:text-orange-200 flex mt-5 items-center "
+                onClick={async () => {
+                  setPosts(await listPosts());
+                }}
+              >
+                <svg
+                  className="h-8 w-8 text-orange"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  stroke="currentColor"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  {" "}
+                  <path stroke="none" d="M0 0h24v24H0z" />{" "}
+                  <circle cx="12" cy="12" r="9" />{" "}
+                  <line x1="8" y1="12" x2="8" y2="12.01" />{" "}
+                  <line x1="12" y1="12" x2="12" y2="12.01" />{" "}
+                  <line x1="16" y1="12" x2="16" y2="12.01" />
+                </svg>
+
+                <h2 className="hover:scale-110 motion-reduce:transform-none hover:text-orange-200  pl-1 text-white text-2xl">
+                  Show all posts
+                </h2>
+              </button>
+            
+
             <button
               className=" hover:scale-110 motion-reduce:transform-none hover:text-orange-200 flex mt-5 items-center "
               onClick={() => {

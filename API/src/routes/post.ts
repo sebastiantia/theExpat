@@ -1,7 +1,8 @@
 import { Router } from "express";
 import { Post } from "../models/Post";
 import { getConnection } from "typeorm";
-import { isAuth } from "../middleware/isAuth"
+import { isAuth } from "../middleware/isAuth";
+import { User } from "../models/User";
 export const router = Router();
 
 // const postRepo = getRepository(Post);
@@ -37,7 +38,6 @@ router.post("/add", async (req, res) => {
   res.json(post);
 });
 
-
 router.get("/get_user_posts", isAuth, async (_, res) => {
   const photos = await getConnection()
     .createQueryBuilder()
@@ -49,35 +49,34 @@ router.get("/get_user_posts", isAuth, async (_, res) => {
   res.json(photos);
 });
 
-router.post("/update" , async (req, _) => {
+router.post("/update", async (req, _) => {
   const { id }: { id: number } = req.body;
   const result = await getConnection()
-  .createQueryBuilder()
-  .update(Post)
-  .where("post.id = :id", { id })
-  .set({ description : req.body.description,
-          title: req.body.title,
-          visitDate: req.body.visitDate,
-  })
+    .createQueryBuilder()
+    .update(Post)
+    .where("post.id = :id", { id })
+    .set({
+      description: req.body.description,
+      title: req.body.title,
+      visitDate: req.body.visitDate,
+    })
 
-  .returning("*")
-  .execute();
-  return result.raw[0]
-})
+    .returning("*")
+    .execute();
+  return result.raw[0];
+});
 
-router.post("/singlepost", async(req, res) => {
+router.post("/singlepost", async (req, res) => {
   const { id }: { id: number } = req.body;
   const post = await getConnection()
-  .createQueryBuilder()
-  .select("post")
-  .from(Post, "post")
-  .where("post.id = :id", { id})
-  .getOne()
+    .createQueryBuilder()
+    .select("post")
+    .from(Post, "post")
+    .where("post.id = :id", { id })
+    .getOne();
 
-  res.json(post)
-
-})
-
+  res.json(post);
+});
 
 router.post("/delete", async (req, res) => {
   const { id }: { id: number } = req.body;
@@ -93,5 +92,7 @@ router.post("/delete", async (req, res) => {
     res.json(e);
   }
 });
+
+
 
 export { router as PostRouter };

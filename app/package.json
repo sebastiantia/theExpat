@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "@headlessui/react": "^1.4.3",
+    "axios": "^0.26.0",
     "dotenv-safe": "^8.2.0",
     "framer-motion": "^4.0.3",
     "mapbox-gl": "^2.7.0",

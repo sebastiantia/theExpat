@@ -97,3 +97,27 @@ export const postDelete = async ({id}) => {
     
     return data
     }
+
+export const heartPost = async (id : number) => {
+    const data = await axios.post(`${API_URL}/api/heart/heart_post`, {
+        id: id
+    },{
+        withCredentials: true
+    })
+    
+    return data
+
+};
+
+export const isHearted = async ( postId : { postId: number }) => {
+    const { data } = await axios.get(
+      `${API_URL}/api/v1/heart/is_hearted/${postId}`,
+      {
+        withCredentials: true,
+      }
+    );
+  
+    return data;
+
+  };
+

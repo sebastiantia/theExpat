@@ -12,6 +12,8 @@ import { Post } from "./models/Post";
 import { UserRouter } from "./routes/user";
 import "reflect-metadata"
 import { generateUploadURL } from "./s3"
+import { Heart } from "./models/Heart";
+import { HeartRouter } from "./routes/heart";
 
 const main = async () => {
   const app = express();
@@ -24,7 +26,7 @@ const main = async () => {
     url: process.env.DATABASE_URL,
     logging: true,
     synchronize: true,
-    entities: [Post, User],
+    entities: [Post, User, Heart],
   });
 
 
@@ -64,6 +66,7 @@ const main = async () => {
   );
   app.use("/api/post", PostRouter);
   app.use("/api/user", UserRouter);
+  app.use("/api/heart", HeartRouter);
 
   app.get('/s3Url', async ( req, res) => {
     console.log(req.body);

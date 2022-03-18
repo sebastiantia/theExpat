@@ -7,7 +7,6 @@ import { Post } from "../models/Post";
 export const router = Router();
 
 router.get("/all_hearted_posts", isAuth, async (_, res) => {
-  console.log(res.locals.user.id);
   const heartedPhotos = await getConnection()
     .createQueryBuilder(Heart, "heart")
     .leftJoinAndSelect("heart.post", "post")
@@ -15,7 +14,6 @@ router.get("/all_hearted_posts", isAuth, async (_, res) => {
       userId: res.locals.user.id,
     })
     .getMany();
-  console.log(heartedPhotos);
   res.json(heartedPhotos);
 });
 
@@ -44,7 +42,6 @@ router.post("/heart_post", isAuth, async (req, res) => {
 
   const  id  = req.body;
   const postId = id;
-  console.log("TEST< : ", postId)
 
   const heart = await getConnection()
     .createQueryBuilder()

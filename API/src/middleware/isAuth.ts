@@ -2,7 +2,6 @@ import {Request, Response, NextFunction } from "express"
 import { User } from "../models/User";
 
 export const isAuth = async (req: Request, res: Response, next: NextFunction) => {
-  console.log(req.session.userId)
   if (!req.session || !req.session.userId) {
     throw new Error("unauthorized");
   }
@@ -14,7 +13,6 @@ export const isAuth = async (req: Request, res: Response, next: NextFunction) =>
   }
 
   res.locals.user = user;
-  console.log(res.locals.user);
 
   next();
 };

@@ -165,7 +165,6 @@ const PostEntry = ({ location, setPostLocation, getPosts, user }) => {
                                 }
                               );
 
-                              // console.log(url.data);
 
                               console.log("IMAGE FILE : ", data.image )
 
@@ -184,7 +183,6 @@ const PostEntry = ({ location, setPostLocation, getPosts, user }) => {
                               }
                               const imageUrl = url.data.split("?")[0];
                               
-                              console.log(data);
                               await createPost({ ...data, image: imageUrl });
 
                               setPostLocation(null);

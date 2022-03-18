@@ -11,9 +11,10 @@ interface SidebarProps {
   setUser: React.Dispatch<React.SetStateAction<User>>;
   setmapStyle: React.Dispatch<React.SetStateAction<string>>;
   setPosts: React.Dispatch<React.SetStateAction<[]>>;
+  setUpdate:React.Dispatch<React.SetStateAction<number>> ;
 }
 
-const SideBar = ({ user, setUser, setmapStyle, setPosts }: SidebarProps) => {
+const SideBar = ({ user, setUser, setmapStyle, setPosts, setUpdate }: SidebarProps) => {
   const [showSidebar, setShowSidebar] = useState(false);
   const [showviewPosts, setshowviewPosts] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
@@ -34,7 +35,7 @@ const SideBar = ({ user, setUser, setmapStyle, setPosts }: SidebarProps) => {
           setmapStyle={setmapStyle}
         />
       ) : null}
-      {showviewPosts ? <ViewPosts setshowviewPosts={setshowviewPosts} /> : null}
+      {showviewPosts ? <ViewPosts setUpdate={setUpdate} setshowviewPosts={setshowviewPosts} /> : null}
 
       {showSidebar ? (
         <button

@@ -2,10 +2,20 @@ import { Dialog, Transition } from "@headlessui/react";
 import React, { Fragment, useState } from "react";
 import { postDelete } from "../api";
 
+
+interface SidebarProps {
+  setconfirmDelete: React.Dispatch<React.SetStateAction<boolean>>;
+  setUpdate: React.Dispatch<React.SetStateAction<number>>;
+  setdeletePost: React.Dispatch<React.SetStateAction<number>>;
+  deletePost: number;
+}
+
+
 const Confirmation = ({
   setconfirmDelete,
   deletePost,
   setdeletePost,
+  setUpdate,
 }) => {
   const [loading, setLoading] = useState(false);
   return (
@@ -67,8 +77,7 @@ const Confirmation = ({
                                     const data = await postDelete({id: deletePost})
                                     setconfirmDelete(false);
                                     setLoading(false);
-
-
+                                    setUpdate(1)
                                 }}
                               >
                                 Yes

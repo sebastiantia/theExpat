@@ -49,7 +49,6 @@ export const singlePost = async ({ id }) => {
     const data = await axios.post(`${API_URL}/api/post/singlepost`,{
         id: id
     })
-    console.log("DAATA ", data)
     return data.data
 }
 
@@ -72,7 +71,7 @@ export const me = async () => {
 }
 
 export const register = async ({username, password} : User) => {
-    const {data} = await axios.post(`${API_URL}/api/user/register`, {
+    const data = await axios.post(`${API_URL}/api/user/register`, {
         username: username,
         password: password
     }, {

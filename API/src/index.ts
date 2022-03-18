@@ -32,8 +32,8 @@ const main = async () => {
 
   app.set("trust proxy", 1);
 
-  const RedisStore = connectRedis(session);
-  const redis = new Redis(process.env.REDIS_URL);
+  // const RedisStore = connectRedis(session);
+  // const redis = new Redis(process.env.REDIS_URL);
 
   app.use(express.json());
 
@@ -48,10 +48,10 @@ const main = async () => {
   app.use(
     session({
       name: "cookkie",
-      store: new RedisStore({
-        client: redis,
-        disableTouch: true,
-      }),
+      // store: new RedisStore({
+      //   client: redis,
+      //   disableTouch: true,
+      // }),
       cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 30,
         httpOnly: true,
@@ -69,9 +69,7 @@ const main = async () => {
   app.use("/api/heart", HeartRouter);
 
   app.get('/s3Url', async ( req, res) => {
-    console.log(req.body);
     const url =  await generateUploadURL()
-    console.log("url:, ", url);
     res.json(url)
 
   })

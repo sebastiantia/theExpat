@@ -15,16 +15,21 @@ router.get("/me", async (req, res): Promise<void> => {
   res.json(user);
 });
 
-
-
-
 router.post("/register", async (req, res) => {
-  if(req.body.username.length < 3){
-    res.json({ usererror: "Username is too short :("})
+  console.log(req.body)
+  const homie = await User.findOne({ username: req.body.username });
+
+  if (homie) {
+    res.json({ usererror: "Username is already taken" });
     return;
   }
-  if(req.body.password.length < 3){
-    res.json({ passworderror: "Password is too short :( "})
+
+  if (req.body.username.length < 3) {
+    res.json({ usererror: "Username is too short :(" });
+    return;
+  }
+  if (req.body.password.length < 3) {
+    res.json({ passworderror: "Password is too short :( " });
     return;
   }
   const hashed = await argon2.hash(req.body.password);
@@ -44,6 +49,7 @@ router.post("/register", async (req, res) => {
   } catch (e) {
     console.log("error. ", e);
   }
+  console.log(user);
 
   req.session!.userId = user.id;
 
@@ -63,9 +69,8 @@ router.post("/login", async (req, res) => {
   }
   req.session!.userId = user.id;
 
-  res.json({user});
+  res.json({ user });
 });
-
 
 router.post("/logout", isAuth, async (req, res) => {
   req.session.destroy(async (e) => {

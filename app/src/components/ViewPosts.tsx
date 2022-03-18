@@ -4,7 +4,13 @@ import { getUserPosts } from "../api";
 import Confirmation from "./Confirmation";
 import Update from "./UpdatePost";
 
-const ViewPosts = ({ setshowviewPosts }) => {
+interface SidebarProps {
+  setshowviewPosts: React.Dispatch<React.SetStateAction<boolean>>;
+  setUpdate: React.Dispatch<React.SetStateAction<number>>;
+}
+
+
+const ViewPosts = ({ setshowviewPosts, setUpdate } : SidebarProps) => {
   const [loading, setLoading] = useState(false);
   const [userPosts, setuserPosts] = useState([]);
   const [confirmDelete, setconfirmDelete] = useState(false);
@@ -30,6 +36,7 @@ const ViewPosts = ({ setshowviewPosts }) => {
           setconfirmDelete={setconfirmDelete}
           deletePost={deletePost}
           setdeletePost={setdeletePost}
+          setUpdate={setUpdate}
         />
       ) : (
         <>

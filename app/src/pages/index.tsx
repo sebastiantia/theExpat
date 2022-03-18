@@ -24,22 +24,19 @@ const Index = ({result,data }) => {
     longitude: -95.665,
     zoom: 4,
   });
-  const [open, setOpen] = useState(false);
-
+  const [update, setUpdate ] = useState(null) 
   const [user, setUser] = useState(data);
-  const [message, setMessage] = useState({});
-
   const [mapStyle, setmapStyle] = useState(
     "mapbox://styles/sebastiantia/ckzw83sus000e14mhk1la4tm1"
   );
 
   const [heartState, setHeartState] = useState(false);
 
-
   const getPosts = async () => {
     const result = await listPosts();
     setPosts(result);
   };
+
 
   useEffect(() => {
     (async () => {
@@ -47,13 +44,13 @@ const Index = ({result,data }) => {
       const data = await me();
       setUser(data);
     })();
-  }, [heartState]);
+  }, [heartState, update]);
 
   const showAddMarkerPopup = (event) => {
     const info = event.lngLat;
     setPostLocation(info);
   };
-  console.log(posts)
+
   return (
     <>
       <div className="flex flex-col items-center justify-center min-h-screen py-2">
@@ -62,6 +59,7 @@ const Index = ({result,data }) => {
           setUser={setUser}
           user={user}
           setmapStyle={setmapStyle}
+          setUpdate={setUpdate}
         />
       </div>
       <link
@@ -91,17 +89,6 @@ const Index = ({result,data }) => {
           renderWorldCopies={true}
         >
           {posts.map((post) => {
-            // const [heartState, setHeartState] = useState<boolean>(false)
-            
-            console.log(post.id);
-
-            // useEffect(() => {
-            //   (async () => {
-                // const { heart } = await isHearted({ postId: post.id });
-            //   })();
-            // }, []);
-            
-
             return (
               <>
                 <Marker

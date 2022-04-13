@@ -21,8 +21,8 @@ const main = async () => {
   await createConnection({
     type: "postgres",
     database: "proj",
-    username: "postgres",
-    password: "sebastian88",
+    username: process.env.DATABASE_USERNAME,
+    password: process.env.DATABASE_PASSWORD,
     url: process.env.DATABASE_URL,
     logging: true,
     synchronize: true,
@@ -71,7 +71,6 @@ const main = async () => {
   app.get('/s3Url', async ( req, res) => {
     const url =  await generateUploadURL()
     res.json(url)
-
   })
 
   // app.use((req, res, next) => {

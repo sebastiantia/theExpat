@@ -7,3 +7,5 @@ dist
 .env
 
 output.css
+
+.DS_Store

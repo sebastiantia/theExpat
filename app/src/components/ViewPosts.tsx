@@ -1,6 +1,7 @@
 import { Dialog, Transition } from "@headlessui/react";
 import React, { Fragment, useEffect, useState } from "react";
 import { getUserPosts } from "../api";
+import { Post } from "../types/Post";
 import Confirmation from "./Confirmation";
 import Update from "./UpdatePost";
 
@@ -11,15 +12,16 @@ interface SidebarProps {
 
 
 const ViewPosts = ({ setshowviewPosts, setUpdate } : SidebarProps) => {
-  const [loading, setLoading] = useState(false);
-  const [userPosts, setuserPosts] = useState([]);
-  const [confirmDelete, setconfirmDelete] = useState(false);
-  const [deletePost, setdeletePost] = useState(0);
-  const [updateModal, setupdateModal] = useState(false);
-  const [updatePost, setupdatePost] = useState(0);
+  const [loading, setLoading] = React.useState<boolean>(false);
+  const [userPosts, setuserPosts] = React.useState<[Post] | []>([]);
+  const [confirmDelete, setconfirmDelete] = React.useState<boolean>(false);
+  const [deletePost, setdeletePost] = React.useState<number>(0);
+  const [updateModal, setupdateModal] = React.useState<boolean>(false);
+  const [updatePost, setupdatePost] = React.useState<number>(0);
 
   const viewUserPosts = async () => {
     const result = await getUserPosts();
+    console.log(result)
     setuserPosts(result);
   };
 

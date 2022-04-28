@@ -2,9 +2,6 @@
 const API_URL = 'http://localhost:4000'
 
 import axios from 'axios'
-import { Popup } from 'react-map-gl'
-import { createContext } from 'vm'
-
 import { Post} from './types/Post'
 import { User} from './types/User'
 
@@ -97,7 +94,9 @@ export const postDelete = async ({id}) => {
     return data
     }
 
-export const heartPost = async (id : number) => {
+export const heartPost = async (id) => {
+    console.log("FUCCKCKKCKC")
+    console.log(id)
     const data = await axios.post(`${API_URL}/api/heart/heart_post`, {
         id: id
     },{

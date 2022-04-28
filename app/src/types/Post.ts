@@ -8,4 +8,5 @@ export type Post = {
     visitDate: string;
     image: any;
     creator: string;
+    heartcount: number;
 }

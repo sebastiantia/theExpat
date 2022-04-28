@@ -35,12 +35,11 @@ router.get("/is_hearted/:id", async (req, res) => {
   }
 
   res.json({ heart: true });
-  
 });
 
 router.post("/heart_post", isAuth, async (req, res) => {
 
-  const  id  = req.body;
+  const id = req.body.id;
   const postId = id;
 
   const heart = await getConnection()
@@ -52,6 +51,8 @@ router.post("/heart_post", isAuth, async (req, res) => {
     })
     .getOne();
 
+  console.log("TESTETETSTETST")
+  console.log(heart)
   if (!heart) {
     await getConnection()
       .createQueryBuilder()
@@ -73,26 +74,26 @@ router.post("/heart_post", isAuth, async (req, res) => {
 
     res.json({ heart: true });
     return;
+  } else {
+    await getConnection()
+      .createQueryBuilder()
+      .update(Post)
+      .set({ heartcount: () => "heartcount - 1" })
+      .where("id = :id", { id: postId })
+      .execute();
+
+    await getConnection()
+      .createQueryBuilder()
+      .delete()
+      .from(Heart)
+      .where("postId = :postId and userId = :userId", {
+        postId,
+        userId: res.locals.user.id,
+      })
+      .execute();
+
+    res.json({ heart: false });
   }
-
-  await getConnection()
-    .createQueryBuilder()
-    .update(Post)
-    .set({ heartcount: () => "heartcount - 1" })
-    .where("id = :id", { id: postId })
-    .execute();
-
-  await getConnection()
-    .createQueryBuilder()
-    .delete()
-    .from(Heart)
-    .where("postId = :postId and userId = :userId", {
-      postId,
-      userId: res.locals.user.id,
-    })
-    .execute();
-
-  res.json({ heart: false });
 });
 
 export { router as HeartRouter };

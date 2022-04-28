@@ -12,8 +12,7 @@ import PostEntry from "../components/PostEntry";
 import SideBar from "../components/SideBar";
 
 const Index = ({result,data }) => {
-  console.log("RESULT: ", result )
-  console.log("DATA: ", data )
+
   const [posts, setPosts] = useState(result);
   const [showPopup, setShowPopup] = useState({});
   const [postLocation, setPostLocation] = useState(null);
@@ -95,6 +94,7 @@ const Index = ({result,data }) => {
                   longitude={ConvertBack(post.longitude)}
                   latitude={ConvertBack(post.latitude)}
                   anchor="center"
+                  key={post.id}
                 >
                   <div
                     onClick={() => {
@@ -170,11 +170,12 @@ const Index = ({result,data }) => {
                           </span>
                           <span className="pl-1 mr-1 float-right text-xl w-4">
                             
-                            {post.heartcount  !== 0 ? post.heartcount : null}
+                            {post.heartcount > 0 ? post.heartcount : null}
                           </span>
                           <button
                             onClick={async () => {
                               setHeartState(heartState)
+                              console.log(post.id)
                               heartPost(post.id);
                               setHeartState(!heartState)
                               const result = await listPosts();
@@ -245,7 +246,6 @@ const Index = ({result,data }) => {
               />
             </>
           ) : null}
-          {/* style={{position:"relative", top:"90px", left: "-30px"}} */}
           <GeolocateControl position="top-left" trackUserLocation={true} />
           <FullscreenControl position="top-left" />
           <NavigationControl position="top-left" visualizePitch={true} />

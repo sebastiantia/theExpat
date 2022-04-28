@@ -2,7 +2,6 @@ import { Router } from "express";
 import { Post } from "../models/Post";
 import { getConnection } from "typeorm";
 import { isAuth } from "../middleware/isAuth";
-import { User } from "../models/User";
 export const router = Router();
 
 // const postRepo = getRepository(Post);
